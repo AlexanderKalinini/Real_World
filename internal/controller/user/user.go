@@ -2,12 +2,12 @@ package user
 
 import "rwa/internal/repository/user"
 
-type CreateUserController struct {
+type UsersController struct {
 	UserRepo *user.Repository
 }
 
-func NewUserController(userRepo *user.Repository) *CreateUserController {
-	return &CreateUserController{
+func NewUserController(userRepo *user.Repository) *UsersController {
+	return &UsersController{
 		UserRepo: userRepo,
 	}
 }

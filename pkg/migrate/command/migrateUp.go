@@ -18,6 +18,7 @@ var MigrateUpCmd = &cobra.Command{
 func up(cmd *cobra.Command, args []string) {
 	db, err := database.InitSqlDB()
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	migrator := migrate.NewMigrator(db.GetDB())

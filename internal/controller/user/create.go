@@ -8,14 +8,13 @@ import (
 	"rwa/internal/model/user"
 )
 
-func (c *CreateUserController) Create(w http.ResponseWriter, r *http.Request) {
+func (c *UsersController) Create(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	body := r.Body
 	w.Header().Set("Content-Type", "application/json")
 	defer func(body io.ReadCloser) {
 		err := body.Close()
 		if err != nil {
-			fmt.Println(err)
 			return
 		}
 	}(body)
@@ -24,20 +23,20 @@ func (c *CreateUserController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	bodyByte, err := io.ReadAll(body)
 	if err != nil {
-		return
+		return err
 	}
 	var usersWrapper UsersWrapper
 	err = json.Unmarshal(bodyByte, &usersWrapper)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
 
 	err = c.UserRepo.Create(ctx, &usersWrapper.Users)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
+		return err
 	}
 
 	fmt.Println(string(bodyByte))
@@ -45,6 +44,7 @@ func (c *CreateUserController) Create(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(bodyByte)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
+	return nil
 }

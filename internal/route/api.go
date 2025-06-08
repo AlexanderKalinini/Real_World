@@ -3,14 +3,15 @@ package route
 import (
 	"github.com/gorilla/mux"
 	"rwa/internal/controller/user"
+	"rwa/internal/middleware"
 )
 
 type Router struct {
 	Router         *mux.Router
-	userController *user.CreateUserController
+	userController *user.UsersController
 }
 
-func NewApiRouter(userController *user.CreateUserController) *Router {
+func NewApiRouter(userController *user.UsersController) *Router {
 	router := &Router{
 		Router:         mux.NewRouter(),
 		userController: userController,
@@ -20,5 +21,5 @@ func NewApiRouter(userController *user.CreateUserController) *Router {
 }
 
 func (r *Router) registerRoutes() {
-	r.Router.HandleFunc("/users", r.userController.Create).Methods("POST")
+	r.Router.HandleFunc("/users", middleware.ErrorHandler(r.userController.Create)).Methods("POST")
 }

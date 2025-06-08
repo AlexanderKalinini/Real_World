@@ -11,7 +11,7 @@ type Sql struct {
 }
 
 func InitSqlDB() (*Sql, error) {
-	sqlConfig := config.GetSqlConfig()
+	sqlConfig := config.Databases["sql"]
 	var username = sqlConfig["username"]
 	var password = sqlConfig["password"]
 	var dbPort = sqlConfig["port"]

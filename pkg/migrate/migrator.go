@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -124,12 +123,12 @@ func (m *Migrator) Down(migrationDir string) error {
 
 func (m *Migrator) Create(migrationDir, fileName string) error {
 	fileName = strings.TrimSuffix(fileName, ".sql")
-	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-	_, err := os.Create(path.Join(migrationDir, timestamp+"_"+fileName+".sql"))
+	dateTime := time.Now().Format("02_01_2006_15_04_05") + time.DateTime
+	_, err := os.Create(path.Join(migrationDir, dateTime+"_"+fileName+".sql"))
 	if err != nil {
 		return err
 	}
-	_, err = os.Create(path.Join(migrationDir, timestamp+"_"+fileName+".down.sql"))
+	_, err = os.Create(path.Join(migrationDir, dateTime+"_"+fileName+".down.sql"))
 	if err != nil {
 		return err
 	}

@@ -13,7 +13,8 @@ const PORT = "HTTP_PORT"
 func init() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		return
+
+		fmt.Println(err.Error())
 	}
 }
 

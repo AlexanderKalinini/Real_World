@@ -2,6 +2,7 @@ package provider
 
 import (
 	"database/sql"
+	"fmt"
 	"rwa/internal/controller/user"
 	"rwa/internal/database"
 	userRepo "rwa/internal/repository/user"
@@ -11,7 +12,7 @@ import (
 type ServiceProvider struct {
 	db             *sql.DB
 	userRepo       *userRepo.Repository
-	userController *user.CreateUserController
+	userController *user.UsersController
 	router         *route.Router
 }
 
@@ -22,7 +23,7 @@ func NewServiceProvider() *ServiceProvider {
 func (s *ServiceProvider) InitDeps() *ServiceProvider {
 	s.NewDB()
 	s.NewUserRepo()
-	s.NewUserController()
+	s.UserController()
 	s.NewApiRouter()
 	return s
 }
@@ -41,7 +42,7 @@ func (s *ServiceProvider) NewUserRepo() *userRepo.Repository {
 	return s.userRepo
 }
 
-func (s *ServiceProvider) NewUserController() *user.CreateUserController {
+func (s *ServiceProvider) UserController() *user.UsersController {
 	s.userController = user.NewUserController(s.userRepo)
 	return s.userController
 }
@@ -53,4 +54,12 @@ func (s *ServiceProvider) NewApiRouter() *route.Router {
 
 func (s *ServiceProvider) GetApiRouter() *route.Router {
 	return s.router
+}
+
+func (s *ServiceProvider) Close() error {
+	err := s.db.Close()
+	if err != nil {
+		return fmt.Errorf("error closing db: %w", err)
+	}
+	return nil
 }
