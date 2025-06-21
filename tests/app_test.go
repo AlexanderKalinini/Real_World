@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -22,6 +23,18 @@ import (
 type FakeTime struct {
 	Valid bool
 }
+
+func RandString(n int) string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	rand.Seed(time.Now().UnixNano())
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}
+
+const PORT = "HTTP_PORT"
 
 func (ft *FakeTime) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
@@ -87,14 +100,17 @@ func WeirdMagicClone(in interface{}) interface{} {
 func TestApp(t *testing.T) {
 	rand.NewSource(time.Now().UnixNano())
 
-	var (
-		app = app.GetApp()
-		ts  = httptest.NewServer(app)
+	var application, err = app.NewApp()
+	fmt.Println(application)
+	if err != nil {
+		t.Fatal("fatal app", err)
+	}
 
-		// username = RandStringRunes(16)
-		username = "golang"
+	var (
+		username = RandString(10)
+		ts       = httptest.NewServer(application.Router.Router)
 		// apiurl   = "https://conduit.productionready.io/api"
-		apiurl   = ts.URL + "/controller"
+		apiurl   = ts.URL + "/api"
 		password = "love"
 	)
 
@@ -508,10 +524,14 @@ func TestApp(t *testing.T) {
 			if err != nil {
 				t.Fatalf("request error: %v", err)
 			}
-			defer resp.Body.Close()
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+				}
+			}(resp.Body)
 			respBody, err := ioutil.ReadAll(resp.Body)
 
-			// t.Logf("\nreq body: %s\nresp body: %s", body, respBody)
+			t.Logf("\nreq body: %s\nresp body: %s", body, respBody)
 
 			if item.ResponseStatus != resp.StatusCode {
 				t.Fatalf("bad status code, want: %v, have:%v", item.ResponseStatus, resp.StatusCode)

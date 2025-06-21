@@ -3,7 +3,6 @@ package argon
 import (
 	"bytes"
 	"crypto/rand"
-	"fmt"
 	"golang.org/x/crypto/argon2"
 	"os"
 	"strconv"
@@ -20,18 +19,18 @@ func GetSalt(length int) []byte {
 	return res
 }
 
-func GetHashPass(salt []byte, plainPassword string) []byte {
+func GetHashPass(plainPassword string, salt []byte) []byte {
 	if salt == nil {
 		salt = GetSalt(saltLength)
 	}
-	fmt.Println(string(salt))
+
 	hashedPass := argon2.IDKey([]byte(plainPassword), salt, 1, 64*1024, 4, 32)
 	return append(salt, hashedPass...)
 }
 
-func CheckPass(passHash []byte, plainPassword string) bool {
+func CheckPass(plainPassword string, passHash []byte) bool {
 	salt := make([]byte, saltLength)
 	copy(salt, passHash[:saltLength])
-	userPassHash := GetHashPass(salt, plainPassword)
+	userPassHash := GetHashPass(plainPassword, salt)
 	return bytes.Equal(userPassHash, passHash)
 }

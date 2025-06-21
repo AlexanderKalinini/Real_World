@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"rwa/cmd/command"
 )
 
 func init() {
@@ -13,7 +12,7 @@ func init() {
 }
 
 func main() {
-	err := command.Execute()
+	err := Execute()
 	if err != nil {
 		return
 	}

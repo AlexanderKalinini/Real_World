@@ -20,7 +20,7 @@ func create(cmd *cobra.Command, args []string) {
 	if err != nil {
 		return
 	}
-	migrator := migrate.NewMigrator(db.GetDB())
+	migrator := migrate.NewMigrator(db.DB)
 	err = migrator.Create(config.MigrationsPath, args[0])
 	if err != nil {
 		fmt.Println(err)

@@ -7,18 +7,18 @@ import (
 )
 
 type Sql struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 func InitSqlDB() (*Sql, error) {
-	sqlConfig := config.Databases["sql"]
-	var username = sqlConfig["username"]
-	var password = sqlConfig["password"]
-	var dbPort = sqlConfig["port"]
-	var dbHost = sqlConfig["host"]
-	var dbName = sqlConfig["dbname"]
+	cfg := config.LoadConfig()
+	var username = cfg.MySql.Username
+	var password = cfg.MySql.Password
+	var host = cfg.MySql.Host
+	var port = cfg.MySql.Port
+	var dbName = cfg.MySql.Database
 
-	db, err := sql.Open("mysql", username+":"+password+"@tcp("+dbHost+":"+dbPort+")/")
+	db, err := sql.Open("mysql", username+":"+password+"@tcp("+host+":"+port+")/?parseTime=true")
 	if err != nil {
 		return nil, err
 	}
@@ -36,9 +36,5 @@ func InitSqlDB() (*Sql, error) {
 		return nil, err
 	}
 
-	return &Sql{db: db}, nil
-}
-
-func (s *Sql) GetDB() *sql.DB {
-	return s.db
+	return &Sql{DB: db}, nil
 }

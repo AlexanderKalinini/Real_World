@@ -4,7 +4,7 @@ type ValidationErrors struct {
 	Message string
 }
 
-func (v *ValidationErrors) Error() string {
+func (v ValidationErrors) Error() string {
 	return v.Message
 }
 

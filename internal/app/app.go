@@ -1,14 +1,38 @@
 package app
 
 import (
-	"net/http"
-	"rwa/internal/provider"
+	userContr "rwa/internal/controller/user"
+	"rwa/internal/database"
+	userRepo "rwa/internal/infractructure/repository/user"
+	"rwa/internal/route"
+	"rwa/internal/usecase/user"
 )
 
-func GetApp() http.Handler {
+type App struct {
+	Router *route.Router
+	DB     *database.Sql
+}
 
-	serviceProvider := provider.NewServiceProvider()
-	serviceProvider.InitDeps()
+func NewApp() (*App, error) {
 
-	return serviceProvider.GetApiRouter().Router
+	db, err := database.InitSqlDB()
+	if err != nil {
+		return nil, err
+	}
+
+	repo := userRepo.NewRepository(db.DB)
+	useCase := user.NewUseCase(repo)
+	userController := userContr.NewUserController(useCase)
+	apiRouter := route.NewApiRouter(userController)
+
+	app := &App{
+		Router: apiRouter,
+		DB:     db,
+	}
+
+	return app, nil
+}
+
+func (a *App) Close() error {
+	return a.DB.DB.Close()
 }

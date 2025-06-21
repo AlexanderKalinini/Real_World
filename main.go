@@ -19,13 +19,25 @@ func init() {
 }
 
 func main() {
-	h := app.GetApp()
+
+	newApp, err := app.NewApp()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	defer func(newApp *app.App) {
+		err := newApp.Close()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}(newApp)
+
 	addr := ":" + os.Getenv(PORT)
 
 	fmt.Println("start server at", addr)
-	err := http.ListenAndServe(addr, h)
+	err = http.ListenAndServe(addr, newApp.Router.Router)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		return
 	}
 }

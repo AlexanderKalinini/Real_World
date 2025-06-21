@@ -21,7 +21,7 @@ func down(cmd *cobra.Command, args []string) {
 		fmt.Println(err)
 		return
 	}
-	migrator := migrate.NewMigrator(db.GetDB())
+	migrator := migrate.NewMigrator(db.DB)
 	err = migrator.Down(config.MigrationsPath)
 	if err != nil {
 		fmt.Println(err)
